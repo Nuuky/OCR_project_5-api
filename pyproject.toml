@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "nlp topic prediction api"
+version = "0.1.0"
+description = ""
+authors = ["Aurélien Partiot <aurelien.partiot@orange.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+scikit-learn = "^1.2.2"
+nltk = "^3.8.1"
+gensim = "^4.3.1"
+pydantic = "^1.10.9"
+uvicorn = "^0.22.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
