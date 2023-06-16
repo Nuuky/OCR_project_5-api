@@ -12,6 +12,8 @@ nltk = "^3.8.1"
 gensim = "^4.3.1"
 pydantic = "^1.10.9"
 uvicorn = "^0.22.0"
+pandas = "^2.0.2"
+fastapi = "^0.97.0"
 
 
 [tool.poetry.group.dev.dependencies]
