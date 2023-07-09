@@ -17,7 +17,9 @@ def test_preprocess_text():
 def test_tokenize():
     doc = "Hello ! I've been using, python for -- 2 years - 42"
     tok = tokenize(doc)
-    assert tok == "hello i have been using python for years".split(" ")
+    print(tok.shape)
+    assert tok["python"].values[0] > 0
+    assert tok.shape[1] == 727
 
 def test_html_to_text():
     html = "<html><head><title>Awesome website !</title></head><body><h1>My awesome website</h1><div><p>This is juste an example</p><code>console.log('debug')</code></div></body></html>"

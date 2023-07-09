@@ -3,10 +3,13 @@ import nltk
 from nltk import sent_tokenize, word_tokenize
 from string import punctuation
 import re
+import pandas as pd
+import pickle
 
 nltk.download('punkt')
 nltk.download('stopwords')
-nltk.download('corpus')
+
+tfidf_vectorizer = pickle.load(open("api/nlp/models/tfidf_vectorizer.pkl", "rb"))
 
 errors = [
     [["dont", "dnt"], "don't"],
@@ -22,6 +25,7 @@ ponc   = [
     [["t"], "not"],
     [["m"], "am"]
 ]
+
 
 def replace_errors(sent):
     for error in errors:
@@ -49,7 +53,9 @@ def tokenize(doc: str):
     sent_tokens = sent_tokenize(doc)
     sent_tokens = [preprocess_text(sent) for sent in sent_tokens]
     sent_tokens = [replace_errors(sent) for sent in sent_tokens]
-    return [word for sent in sent_tokens for word in word_tokenize(sent) if word not in punctuation] 
+    sent_tokens = [word for sent in sent_tokens for word in word_tokenize(sent) if word not in punctuation] 
+    sparse_matrix = tfidf_vectorizer.transform([" ".join(sent_tokens)])
+    return pd.DataFrame(sparse_matrix.toarray(), columns=tfidf_vectorizer.get_feature_names_out())
 
 def html_to_text(html):
     soup = BeautifulSoup(html, "html.parser")
