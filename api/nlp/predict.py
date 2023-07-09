@@ -1,7 +1,7 @@
 import pandas as pd
 
 from api.models import Prediction
-from api.nlp.preprocess import tokenize, get_html_text
+from api.nlp.preprocess import tokenize, html_to_text
 
 
 def get_topics_from_html(html: str) -> Prediction:
