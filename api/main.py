@@ -26,9 +26,18 @@ def get_status():
 
 @app.post("/predict_text", response_model=PredictionResponse, tags=["NLP"])
 async def predict_text(body: PredictionRequest):
-    pass
+    try:
+        topics = get_topics_from_text(body.text)
+        print(topics)
+        return PredictionResponse(topics=topics, success=True)
+    except Exception as e:
+        return PredictionResponse(topics=[], success=False, reason=str(e))
 
 
 @app.post("/predict_html", response_model=PredictionResponse, tags=["NLP"])
 async def predict_html(body: PredictionRequest):
-    pass
+    try:
+        topics = get_topics_from_html(body.text)
+        return PredictionResponse(topics=topics, success=True)
+    except Exception as e:
+        return PredictionResponse(topics=[], success=False, reason=str(e))

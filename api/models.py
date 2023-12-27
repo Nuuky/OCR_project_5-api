@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -14,25 +14,14 @@ class Status(CustomBaseModel):
     reason: Optional[str]
 
 
-class Topic(CustomBaseModel):
-    name: str
-    proba: Optional[float]
-
-
 class BaseResponse(CustomBaseModel):
-    data: dict
     success: bool
     reason: Optional[str]
 
 
-class Prediction(CustomBaseModel):
-    topics: list[Topic]
-
-
 class PredictionResponse(BaseResponse):
-    data: Prediction
+    topics: list[str]
 
 
 class PredictionRequest(CustomBaseModel):
     text: str
-    max_topics: int
