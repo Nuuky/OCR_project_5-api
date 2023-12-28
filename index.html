@@ -109,7 +109,6 @@
 
                     errorContainer.classList.add('hidden')
                     errorMsg.innerText = '';
-                    console.log(data)
                     data.topics.forEach(topic => addTopic(topic))
                 })
                 .catch(console.error)
