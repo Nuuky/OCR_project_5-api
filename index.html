@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>OCR Projet 5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: sans-serif;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Catégorisez automatiquement des questions</h1>
+    <form>
+        <label for="text">Texte à labéliser</label><br>
+        <textarea type="text" name="text" id="text" cols="100" rows="15"></textarea><br>
+        <input type="submit" value="Envoyer">
+    </form>
+    <div id="res-container">
+        <span></span>
+        <h3>Topics:</h3>
+        <p></p>
+    </div>
+
+    <script>
+        const form = document.getElementsByTagName('form')[0];
+        const resContainer = document.getElementById('res-container');
+        const errorSpan = resContainer.getElementsByTagName('span')[0];
+        const resTopics = resContainer.getElementsByTagName('p')[0];
+
+        form.onsubmit = e => {
+            e.preventDefault();
+
+            fetch('http://api.ocr5.nuky.fr/predict_text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/json'
+                },
+                body: JSON.stringify({
+                    text: form.text.value
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success === false) {
+                    resTopics.innerHTML = '';
+                    errorSpan.innerHTML = "Erreur: " + data.reason;
+                    return;
+                }
+                
+                errorSpan.innerHTML = '';
+                resTopics.innerHTML = data.topics;
+            })
+            .catch(console.error)
+        }
+    </script>
+</body>
+</html>
