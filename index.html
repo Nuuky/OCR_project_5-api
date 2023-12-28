@@ -1,64 +1,121 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <title>OCR Projet 5</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            font-family: sans-serif;
-            font-size: 1.2em;
-            text-align: center;
-        }
-        h1 {
-            font-size: 2em;
-        }
-    </style>
-</head>
-<body>
-    <h1>Catégorisez automatiquement des questions</h1>
-    <form>
-        <label for="text">Texte à labéliser</label><br>
-        <textarea type="text" name="text" id="text" cols="100" rows="15"></textarea><br>
-        <input type="submit" value="Envoyer">
-    </form>
-    <div id="res-container">
-        <span></span>
-        <h3>Topics:</h3>
-        <p></p>
-    </div>
 
+<head xmlns="http://www.w3.org/1999/xhtml">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OCR Projet 5</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <!-- Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer="defer"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+    <main class="bg-[#F5F5F5] min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm mx-auto max-w-2xl">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="tracking-tight text-3xl font-bold">
+                        Catégoriser automatiquement des questions
+                    </h3>
+                </div>
+                <form class="p-6 space-y-4">
+                    <p class="text-gray-500 dark:text-gray-400">
+                        Entrez votre texte ci-dessous pour que notre IA le labelise.
+                    </p>
+                    <div class="space-y-2">
+                        <textarea
+                            class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground min-h-[100px]"
+                            name="text" placeholder="Votre texte..."></textarea>
+                    </div>
+
+                    <button name="sendBtn" type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors h-10 px-4 py-2 w-full bg-[#4A5568] text-[#ffffff]">
+                        Envoyer
+                    </button>
+                </form>
+            </div>
+            <div id="error-message" class="hidden max-w-2xl mx-auto p-4 my-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+                <span class="font-medium"></span>
+            </div>
+            <div class="max-w-2xl mx-auto mt-8">
+                <h2 class="text-2xl font-bold">Labels:</h2>
+                <div id="topics-container" class="flex gap-2 justify-start items-start flex-wrap h-32 rounded-md border mt-2 p-4">
+                </div>
+            </div>
+        </div>
+    </main>
     <script>
         const form = document.getElementsByTagName('form')[0];
-        const resContainer = document.getElementById('res-container');
-        const errorSpan = resContainer.getElementsByTagName('span')[0];
-        const resTopics = resContainer.getElementsByTagName('p')[0];
+        const errorContainer = document.getElementById('error-message');
+        const errorMsg = errorContainer.querySelector('span');
+        const topicsContainer = document.getElementById('topics-container');
+        const sendBtn = form.sendBtn;
+
+        function addTopic(topicName) {
+            const html = `
+                <div
+                    class="flex justify-center items-center rounded-full px-2.5 py-0.5 text-sm font-medium bg-gray-800 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="w-4 h-4 mr-2">
+                        <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z">
+                        </path>
+                        <path d="M7 7h.01"></path>
+                    </svg>
+                    <span>${topicName}</span>
+                </div>
+            `;
+
+            const template = new DOMParser().parseFromString(html, 'text/html').body.firstChild;
+            topicsContainer.appendChild(template);
+        }
 
         form.onsubmit = e => {
             e.preventDefault();
 
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = `<svg aria-hidden="true" class="w-5 h-5 mr-3 text-gray-700 animate-spin fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                </svg>
+                Analyse...
+            `;  
+
             fetch('http://api.ocr5.nuky.fr/predict_text', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'text/json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     text: form.text.value
                 })
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success === false) {
-                    resTopics.innerHTML = '';
-                    errorSpan.innerHTML = "Erreur: " + data.reason;
-                    return;
-                }
-                
-                errorSpan.innerHTML = '';
-                resTopics.innerHTML = data.topics;
-            })
-            .catch(console.error)
+                .then(res => res.json())
+                .then(data => {
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = `Envoyer`;
+
+                    if (!data.success) {
+                        errorContainer.classList.remove('hidden')
+                        errorMsg.innerText = "Erreur: " + data.reason;
+                        topicsContainer.innerHTML = '';
+                        return;
+                    }
+
+                    errorContainer.classList.add('hidden')
+                    errorMsg.innerText = '';
+                    console.log(data)
+                    data.topics.forEach(topic => addTopic(topic))
+                })
+                .catch(console.error)
         }
+
     </script>
 </body>
+
 </html>
