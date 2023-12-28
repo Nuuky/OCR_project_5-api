@@ -17,7 +17,6 @@ def test_preprocess_text():
 def test_tokenize():
     doc = "Hello ! I've been using, python for -- 2 years - 42"
     tok = tokenize(doc)
-    print(tok.shape)
     assert tok["python"].values[0] > 0
     assert tok.shape[1] == 727
 

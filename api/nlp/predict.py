@@ -9,8 +9,6 @@ terms = tfidf_vectorizer.get_feature_names_out()
 
 def get_lda_topic_components(n=5):
     topics = list()
-    print("components_ :", lda_model.components_)
-    print("terms :", terms)
     for _, component in enumerate(lda_model.components_):
         zipped = zip(terms, component)
         top_terms_key=sorted(zipped, key = lambda t: t[1], reverse=True)[:n]

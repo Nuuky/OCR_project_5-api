@@ -28,7 +28,6 @@ def get_status():
 async def predict_text(body: PredictionRequest):
     try:
         topics = get_topics_from_text(body.text)
-        print(topics)
         return PredictionResponse(topics=topics, success=True)
     except Exception as e:
         return PredictionResponse(topics=[], success=False, reason=str(e))
